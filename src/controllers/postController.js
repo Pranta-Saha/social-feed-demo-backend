@@ -19,6 +19,7 @@ export const getFeed = async (req, res, next) => {
         {
           model: PostLike,
           as: 'likes',
+          attributes: ['id', 'userId'],
           include: [
             {
               model: User,
@@ -65,11 +66,18 @@ export const getFeed = async (req, res, next) => {
 export const createPost = async (req, res, next) => {
   try {
     const { content, isPrivate } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (!content) {
+    if (!content || !content.trim()) {
       return res.status(400).json({ message: 'Content is required' });
     }
+
+    // Use uploaded file path if available
+    const randomString = Math.random().toString(36).substring(2, 8);
+    const fileExtension = req.file ? req.file.originalname.split('.').pop() : '';
+    const timestamp = Date.now();
+    const image = req.file
+      ? `/uploads/${req.userId}/${timestamp}_${randomString}.${fileExtension}`
+      : null;
 
     const post = await Post.create({
       content,

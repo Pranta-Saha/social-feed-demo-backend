@@ -1,5 +1,6 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/auth.js';
+import upload from '../middleware/upload.js';
 import {
   getFeed,
   createPost,
@@ -39,7 +40,7 @@ router.use(authMiddleware);
 
 // Post routes
 router.get('/', getFeed);
-router.post('/', createPost);
+router.post('/', upload.single('image'), createPost);
 router.get('/:postId', getPost);
 router.delete('/:postId', deletePost);
 

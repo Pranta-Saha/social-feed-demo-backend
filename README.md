@@ -78,18 +78,21 @@ appifylab-backend/
 ### Step 1: PostgreSQL Installation
 
 **Windows:**
+
 - Download PostgreSQL from https://www.postgresql.org/download/windows/
 - Run the installer and follow the setup wizard
 - Remember the password you set for the `postgres` user
 - PostgreSQL runs on port 5432 by default
 
 **macOS (using Homebrew):**
+
 ```bash
 brew install postgresql@15
 brew services start postgresql@15
 ```
 
 **Linux (Ubuntu/Debian):**
+
 ```bash
 sudo apt-get update
 sudo apt-get install postgresql postgresql-contrib
@@ -117,50 +120,58 @@ CREATE DATABASE appifylab_db;
 ### Step 3: Backend Setup
 
 1. **Navigate to backend folder**
+
    ```bash
    cd appifylab-backend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure environment**
+
    ```bash
    cp .env.example .env
    ```
 
 4. **Edit `.env` file with your PostgreSQL credentials**
+
    ```
    NODE_ENV=development
    PORT=3000
-   
+
    # PostgreSQL Database Configuration
    DB_HOST=localhost
    DB_PORT=5432
    DB_NAME=appifylab_db
    DB_USER=postgres
    DB_PASSWORD=<your_postgres_password>
-   
+
    DB_SSL=false
-   
+
    JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
    JWT_EXPIRY=7d
-   
+
    CORS_ORIGIN=http://localhost:5173
    ```
 
 5. **Run database migrations**
+
    ```bash
    npm run migrate:up
    ```
+
    This creates all tables: Users, Posts, Comments, Replies, PostLikes, CommentLikes, ReplyLikes
 
 6. **Seed sample data (optional)**
+
    ```bash
    npm run seed:all
    ```
+
    This populates the database with 5 test users, 15 posts, 20 comments, 15 replies, and various likes
 
 7. **Start the backend server**
@@ -172,11 +183,13 @@ CREATE DATABASE appifylab_db;
 ### Step 4: Frontend Setup
 
 1. **Navigate to frontend folder** (from project root)
+
    ```bash
    cd appifylab-task
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -190,6 +203,7 @@ CREATE DATABASE appifylab_db;
 ## Database Management Commands
 
 ### Migrations
+
 ```bash
 # Run all pending migrations
 npm run migrate:up
@@ -202,6 +216,7 @@ npm run migrate:create -- --name=your_migration_name
 ```
 
 ### Seeders
+
 ```bash
 # Seed all data
 npm run seed:all
@@ -213,36 +228,43 @@ npm run seed:undo:all
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
 
 ### Posts
+
 - `GET /api/posts` - Get paginated feed (private posts excluded except from author)
 - `GET /api/posts/:id` - Get specific post
 - `POST /api/posts` - Create new post (requires auth)
 - `DELETE /api/posts/:id` - Delete post (auth required, author only)
 
 ### Post Likes
+
 - `POST /api/posts/:id/like` - Like a post
 - `DELETE /api/posts/:id/like` - Unlike a post
 - `GET /api/posts/:id/likes` - Get post likes count
 
 ### Comments
+
 - `GET /api/posts/:postId/comments` - Get comments on post
 - `POST /api/posts/:postId/comments` - Create comment (auth required)
 - `DELETE /api/comments/:id` - Delete comment (auth required, author only)
 
 ### Comment Likes
+
 - `POST /api/comments/:id/like` - Like a comment
 - `DELETE /api/comments/:id/like` - Unlike a comment
 - `GET /api/comments/:id/likes` - Get comment likes count
 
 ### Replies
+
 - `GET /api/comments/:commentId/replies` - Get replies on comment
 - `POST /api/comments/:commentId/replies` - Create reply (auth required)
 - `DELETE /api/replies/:id` - Delete reply (auth required, author only)
 
 ### Reply Likes
+
 - `POST /api/replies/:id/like` - Like a reply
 - `DELETE /api/replies/:id/like` - Unlike a reply
 - `GET /api/replies/:id/likes` - Get reply likes count
@@ -256,17 +278,21 @@ npm run seed:undo:all
 ## Troubleshooting
 
 **"Connection refused" error:**
+
 - Check PostgreSQL is running
 - Verify DB_HOST and DB_PORT in .env
 - Ensure database user and password are correct
 
 **"Database does not exist" error:**
+
 - Create database: `CREATE DATABASE appifylab_db;` in psql
 
 **"Relation does not exist" error:**
+
 - Run migrations: `npm run migrate:up`
 
 **"Password authentication failed":**
+
 - Check DB_USER and DB_PASSWORD in .env match PostgreSQL credentials
 
 ## API Endpoints
@@ -274,6 +300,7 @@ npm run seed:undo:all
 ### Authentication
 
 #### Register
+
 ```http
 POST /api/auth/register
 Content-Type: application/json
@@ -299,6 +326,7 @@ Response:
 ```
 
 #### Login
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -319,12 +347,14 @@ Response:
 ### Posts
 
 #### Get Feed (Paginated)
+
 ```http
 GET /api/posts?page=1&limit=10
 Authorization: Bearer <token>
 ```
 
 #### Create Post
+
 ```http
 POST /api/posts
 Authorization: Bearer <token>
@@ -337,12 +367,14 @@ Content-Type: application/json
 ```
 
 #### Get Single Post
+
 ```http
 GET /api/posts/{postId}
 Authorization: Bearer <token>
 ```
 
 #### Delete Post
+
 ```http
 DELETE /api/posts/{postId}
 Authorization: Bearer <token>
@@ -351,18 +383,21 @@ Authorization: Bearer <token>
 ### Post Likes
 
 #### Like Post
+
 ```http
 POST /api/posts/{postId}/like
 Authorization: Bearer <token>
 ```
 
 #### Unlike Post
+
 ```http
 POST /api/posts/{postId}/unlike
 Authorization: Bearer <token>
 ```
 
 #### Get Post Likes
+
 ```http
 GET /api/posts/{postId}/likes
 Authorization: Bearer <token>
@@ -371,12 +406,14 @@ Authorization: Bearer <token>
 ### Comments
 
 #### Get Comments
+
 ```http
 GET /api/posts/{postId}/comments
 Authorization: Bearer <token>
 ```
 
 #### Create Comment
+
 ```http
 POST /api/posts/{postId}/comments
 Authorization: Bearer <token>
@@ -388,6 +425,7 @@ Content-Type: application/json
 ```
 
 #### Delete Comment
+
 ```http
 DELETE /api/comments/{commentId}
 Authorization: Bearer <token>
@@ -396,18 +434,21 @@ Authorization: Bearer <token>
 ### Comment Likes
 
 #### Like Comment
+
 ```http
 POST /api/comments/{commentId}/like
 Authorization: Bearer <token>
 ```
 
 #### Unlike Comment
+
 ```http
 POST /api/comments/{commentId}/unlike
 Authorization: Bearer <token>
 ```
 
 #### Get Comment Likes
+
 ```http
 GET /api/comments/{commentId}/likes
 Authorization: Bearer <token>
@@ -416,12 +457,14 @@ Authorization: Bearer <token>
 ### Replies
 
 #### Get Replies
+
 ```http
 GET /api/comments/{commentId}/replies
 Authorization: Bearer <token>
 ```
 
 #### Create Reply
+
 ```http
 POST /api/comments/{commentId}/replies
 Authorization: Bearer <token>
@@ -433,6 +476,7 @@ Content-Type: application/json
 ```
 
 #### Delete Reply
+
 ```http
 DELETE /api/replies/{replyId}
 Authorization: Bearer <token>
@@ -441,18 +485,21 @@ Authorization: Bearer <token>
 ### Reply Likes
 
 #### Like Reply
+
 ```http
 POST /api/replies/{replyId}/like
 Authorization: Bearer <token>
 ```
 
 #### Unlike Reply
+
 ```http
 POST /api/replies/{replyId}/unlike
 Authorization: Bearer <token>
 ```
 
 #### Get Reply Likes
+
 ```http
 GET /api/replies/{replyId}/likes
 Authorization: Bearer <token>
@@ -461,6 +508,7 @@ Authorization: Bearer <token>
 ## Database Schema
 
 ### Users Table
+
 ```
 - id (UUID, Primary Key)
 - firstName (String)
@@ -472,6 +520,7 @@ Authorization: Bearer <token>
 ```
 
 ### Posts Table
+
 ```
 - id (UUID, Primary Key)
 - content (Text)
@@ -483,6 +532,7 @@ Authorization: Bearer <token>
 ```
 
 ### Comments Table
+
 ```
 - id (UUID, Primary Key)
 - content (Text)
@@ -493,6 +543,7 @@ Authorization: Bearer <token>
 ```
 
 ### Replies Table
+
 ```
 - id (UUID, Primary Key)
 - content (Text)
@@ -503,6 +554,7 @@ Authorization: Bearer <token>
 ```
 
 ### PostLikes Table
+
 ```
 - id (UUID, Primary Key)
 - postId (UUID, Foreign Key → Posts)
@@ -512,6 +564,7 @@ Authorization: Bearer <token>
 ```
 
 ### CommentLikes Table
+
 ```
 - id (UUID, Primary Key)
 - commentId (UUID, Foreign Key → Comments)
@@ -521,6 +574,7 @@ Authorization: Bearer <token>
 ```
 
 ### ReplyLikes Table
+
 ```
 - id (UUID, Primary Key)
 - replyId (UUID, Foreign Key → Replies)
@@ -532,27 +586,32 @@ Authorization: Bearer <token>
 ## Key Features
 
 ### Authentication
+
 - JWT tokens with configurable expiry
 - Bcrypt password hashing (10 salt rounds)
 - Bearer token required for all protected endpoints
 
 ### Privacy Control
+
 - Posts can be marked as private
 - Private posts only returned to the author
 - Public posts visible to all authenticated users
 
 ### Relationships
+
 - Cascading deletes for posts, comments, and replies
 - Proper foreign key constraints
 - UUID primary keys for security
 
 ### Error Handling
+
 - Input validation
 - Unique constraint handling (duplicate emails)
 - Authorization checks (can only delete own content)
 - Proper HTTP status codes
 
 ### Performance
+
 - Efficient database queries with associations
 - Pagination support on feed endpoint
 - Indexed unique constraints on likes
@@ -590,25 +649,22 @@ curl http://localhost:3000/api/posts \
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| NODE_ENV | development | Environment mode |
-| PORT | 3000 | Server port |
-| DB_HOST | localhost | Database host |
-| DB_NAME | appifylab_db | Database name |
-| DB_USER | root | Database user |
-| DB_PASSWORD | password | Database password |
-| DB_DIALECT | sqlite | Database dialect (sqlite, mysql, postgres) |
-| DB_STORAGE | appifylab.db | SQLite database file path |
-| JWT_SECRET | your_secret_key | JWT secret key |
-| JWT_EXPIRY | 7d | JWT token expiry |
-| CORS_ORIGIN | http://localhost:5173 | Frontend origin for CORS |
+| Variable    | Default               | Description                                |
+| ----------- | --------------------- | ------------------------------------------ |
+| NODE_ENV    | development           | Environment mode                           |
+| PORT        | 3000                  | Server port                                |
+| DB_HOST     | localhost             | Database host                              |
+| DB_NAME     | appifylab_db          | Database name                              |
+| DB_USER     | root                  | Database user                              |
+| DB_PASSWORD | password              | Database password                          |
+| JWT_SECRET  | your_secret_key       | JWT secret key                             |
+| JWT_EXPIRY  | 7d                    | JWT token expiry                           |
+| CORS_ORIGIN | http://localhost:5173 | Frontend origin for CORS                   |
 
 ## Technologies Used
 
 - **Express.js**: Web framework
 - **Sequelize**: ORM for database
-- **SQLite**: Database (can be switched to MySQL/PostgreSQL)
 - **JWT**: Authentication
 - **Bcryptjs**: Password hashing
 - **CORS**: Cross-origin resource sharing
@@ -639,7 +695,6 @@ npm start
 
 ## Notes
 
-- SQLite is used by default for development. Switch to MySQL or PostgreSQL for production.
 - All timestamps are in UTC
 - UUIDs are used for all IDs for better security and distribution
 - Cascading deletes are enabled for maintaining data integrity

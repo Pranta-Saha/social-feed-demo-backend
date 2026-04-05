@@ -3,6 +3,7 @@
 ## ✅ Complete Backend Structure
 
 ### Root Files
+
 ```
 appifylab-backend/
 ├── server.js                    ✅ Express server with routes
@@ -16,12 +17,14 @@ appifylab-backend/
 ```
 
 ### Configuration (1 file)
+
 ```
 src/config/
 └── database.js                  ✅ Sequelize database config
 ```
 
 ### Models (8 files)
+
 ```
 src/models/
 ├── User.js                      ✅ User model (id, email, password, names)
@@ -35,6 +38,7 @@ src/models/
 ```
 
 ### Controllers (7 files)
+
 ```
 src/controllers/
 ├── authController.js            ✅ Register & login logic
@@ -47,6 +51,7 @@ src/controllers/
 ```
 
 ### Routes (2 files)
+
 ```
 src/routes/
 ├── authRoutes.js                ✅ /api/auth/* endpoints
@@ -54,12 +59,14 @@ src/routes/
 ```
 
 ### Middleware (1 file)
+
 ```
 src/middleware/
 └── auth.js                      ✅ JWT auth & error handler
 ```
 
 ### Utilities (1 file)
+
 ```
 src/utils/
 └── jwt.js                       ✅ Token generation & verification
@@ -70,10 +77,12 @@ src/utils/
 ## 🔌 API Endpoints (22 Total)
 
 ### Auth Endpoints (2)
+
 - ✅ `POST /api/auth/register` - Create account
 - ✅ `POST /api/auth/login` - Login user
 
 ### Post Endpoints (7)
+
 - ✅ `GET /api/posts` - Get paginated feed
 - ✅ `POST /api/posts` - Create post
 - ✅ `GET /api/posts/{postId}` - Get post
@@ -83,6 +92,7 @@ src/utils/
 - ✅ `GET /api/posts/{postId}/likes` - Get post likes
 
 ### Comment Endpoints (6)
+
 - ✅ `GET /api/posts/{postId}/comments` - Get comments
 - ✅ `POST /api/posts/{postId}/comments` - Create comment
 - ✅ `DELETE /api/comments/{commentId}` - Delete comment
@@ -91,6 +101,7 @@ src/utils/
 - ✅ `GET /api/comments/{commentId}/likes` - Get comment likes
 
 ### Reply Endpoints (6)
+
 - ✅ `GET /api/comments/{commentId}/replies` - Get replies
 - ✅ `POST /api/comments/{commentId}/replies` - Create reply
 - ✅ `DELETE /api/replies/{replyId}` - Delete reply
@@ -103,6 +114,7 @@ src/utils/
 ## 📊 Database Tables (7 Total)
 
 ### User Table
+
 ```javascript
 {
   id: UUID (Primary Key),
@@ -116,6 +128,7 @@ src/utils/
 ```
 
 ### Post Table
+
 ```javascript
 {
   id: UUID (Primary Key),
@@ -129,6 +142,7 @@ src/utils/
 ```
 
 ### Comment Table
+
 ```javascript
 {
   id: UUID (Primary Key),
@@ -141,6 +155,7 @@ src/utils/
 ```
 
 ### Reply Table
+
 ```javascript
 {
   id: UUID (Primary Key),
@@ -153,6 +168,7 @@ src/utils/
 ```
 
 ### PostLike Table
+
 ```javascript
 {
   id: UUID (Primary Key),
@@ -164,6 +180,7 @@ src/utils/
 ```
 
 ### CommentLike Table
+
 ```javascript
 {
   id: UUID (Primary Key),
@@ -175,6 +192,7 @@ src/utils/
 ```
 
 ### ReplyLike Table
+
 ```javascript
 {
   id: UUID (Primary Key),
@@ -208,24 +226,28 @@ Replies (1) ──→ (many) ReplyLikes (Cascade Delete)
 ## 🔒 Security Features
 
 ### Authentication
+
 - ✅ JWT-based tokens
 - ✅ Bcrypt password hashing (10 salt rounds)
 - ✅ Bearer token validation
 - ✅ Token expiry (configurable)
 
 ### Authorization
+
 - ✅ Auth middleware on protected routes
 - ✅ User ID from token for ownership checks
 - ✅ Delete operations check ownership
 - ✅ Private post visibility checks
 
 ### Data Integrity
+
 - ✅ Unique constraints on emails
 - ✅ Unique constraints on likes (no duplicate likes)
 - ✅ Foreign key constraints
 - ✅ Cascading deletes for consistency
 
 ### Input Validation
+
 - ✅ Required field checks
 - ✅ Email format validation
 - ✅ Content length validation
@@ -236,36 +258,43 @@ Replies (1) ──→ (many) ReplyLikes (Cascade Delete)
 ## 📝 Controllers Implementation
 
 ### authController.js
+
 - `register()` - Create user with validation, bcrypt password, generate token
 - `login()` - Verify credentials, generate token
 
 ### postController.js
+
 - `getFeed()` - Paginated posts with author & likes included
 - `createPost()` - Create post for authenticated user
 - `getPost()` - Get single post with privacy check
 - `deletePost()` - Delete post with ownership check
 
 ### postLikeController.js
+
 - `likePost()` - Create like with duplicate prevention
 - `unlikePost()` - Remove like
 - `getPostLikes()` - List who liked with user details
 
 ### commentController.js
+
 - `getComments()` - Get all comments for post with author & replies
 - `createComment()` - Create comment with post validation
 - `deleteComment()` - Delete comment with ownership check
 
 ### commentLikeController.js
+
 - `likeComment()` - Create like with duplicate prevention
 - `unlikeComment()` - Remove like
 - `getCommentLikes()` - List who liked with user details
 
 ### replyController.js
+
 - `getReplies()` - Get all replies for comment
 - `createReply()` - Create reply with comment validation
 - `deleteReply()` - Delete reply with ownership check
 
 ### replyLikeController.js
+
 - `likeReply()` - Create like with duplicate prevention
 - `unlikeReply()` - Remove like
 - `getReplyLikes()` - List who liked with user details
@@ -275,38 +304,43 @@ Replies (1) ──→ (many) ReplyLikes (Cascade Delete)
 ## 🗿 Model Associations
 
 ### User Model
+
 ```javascript
-User.hasMany(Post, { foreignKey: 'authorId', as: 'posts' })
-User.hasMany(Comment, { foreignKey: 'authorId', as: 'comments' })
-User.hasMany(Reply, { foreignKey: 'authorId', as: 'replies' })
+User.hasMany(Post, { foreignKey: "authorId", as: "posts" });
+User.hasMany(Comment, { foreignKey: "authorId", as: "comments" });
+User.hasMany(Reply, { foreignKey: "authorId", as: "replies" });
 ```
 
 ### Post Model
+
 ```javascript
-Post.belongsTo(User, { foreignKey: 'authorId', as: 'author' })
-Post.hasMany(Comment, { foreignKey: 'postId', as: 'comments' })
-Post.hasMany(PostLike, { foreignKey: 'postId', as: 'likes' })
+Post.belongsTo(User, { foreignKey: "authorId", as: "author" });
+Post.hasMany(Comment, { foreignKey: "postId", as: "comments" });
+Post.hasMany(PostLike, { foreignKey: "postId", as: "likes" });
 ```
 
 ### Comment Model
+
 ```javascript
-Comment.belongsTo(Post, { foreignKey: 'postId' })
-Comment.belongsTo(User, { foreignKey: 'authorId', as: 'author' })
-Comment.hasMany(Reply, { foreignKey: 'commentId', as: 'replies' })
-Comment.hasMany(CommentLike, { foreignKey: 'commentId', as: 'likes' })
+Comment.belongsTo(Post, { foreignKey: "postId" });
+Comment.belongsTo(User, { foreignKey: "authorId", as: "author" });
+Comment.hasMany(Reply, { foreignKey: "commentId", as: "replies" });
+Comment.hasMany(CommentLike, { foreignKey: "commentId", as: "likes" });
 ```
 
 ### Reply Model
+
 ```javascript
-Reply.belongsTo(Comment, { foreignKey: 'commentId' })
-Reply.belongsTo(User, { foreignKey: 'authorId', as: 'author' })
-Reply.hasMany(ReplyLike, { foreignKey: 'replyId', as: 'likes' })
+Reply.belongsTo(Comment, { foreignKey: "commentId" });
+Reply.belongsTo(User, { foreignKey: "authorId", as: "author" });
+Reply.hasMany(ReplyLike, { foreignKey: "replyId", as: "likes" });
 ```
 
 ### Like Models
+
 ```javascript
-PostLike.belongsTo(Post, { foreignKey: 'postId' })
-PostLike.belongsTo(User, { foreignKey: 'userId', as: 'user' })
+PostLike.belongsTo(Post, { foreignKey: "postId" });
+PostLike.belongsTo(User, { foreignKey: "userId", as: "user" });
 // Similar for CommentLike and ReplyLike
 ```
 
@@ -315,18 +349,21 @@ PostLike.belongsTo(User, { foreignKey: 'userId', as: 'user' })
 ## 🚀 Quick Start
 
 ### 1. Install Dependencies
+
 ```bash
 cd appifylab-backend
 npm install
 ```
 
 ### 2. Configure Environment
+
 ```bash
 cp .env.example .env
 # Edit .env with your settings
 ```
 
 ### 3. Start Server
+
 ```bash
 npm run dev
 # Server starts on http://localhost:3000
@@ -334,6 +371,7 @@ npm run dev
 ```
 
 ### 4. Verify Health
+
 ```bash
 curl http://localhost:3000/health
 # Response: {"message":"Server is running"}
@@ -356,7 +394,6 @@ curl http://localhost:3000/health
 
 - **Framework**: Express.js 4.19.2
 - **ORM**: Sequelize 6.37.2
-- **Database**: SQLite 5.1.7 (development)
 - **Authentication**: jsonwebtoken 9.1.2
 - **Password**: bcryptjs 2.4.3
 - **ID Generation**: uuid 9.0.1

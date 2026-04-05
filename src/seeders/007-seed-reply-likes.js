@@ -1,24 +1,23 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export const up = async (queryInterface, Sequelize) => {
   // Get all replies and users
   const replies = await queryInterface.sequelize.query(
     'SELECT id FROM "Replies"',
-    { type: queryInterface.sequelize.QueryTypes.SELECT }
+    { type: queryInterface.sequelize.QueryTypes.SELECT },
   );
 
-  const users = await queryInterface.sequelize.query(
-    'SELECT id FROM "Users"',
-    { type: queryInterface.sequelize.QueryTypes.SELECT }
-  );
+  const users = await queryInterface.sequelize.query('SELECT id FROM "Users"', {
+    type: queryInterface.sequelize.QueryTypes.SELECT,
+  });
 
   if (replies.length === 0 || users.length === 0) {
-    console.warn('No replies or users found. Skipping reply likes seeding.');
+    console.warn("No replies or users found. Skipping reply likes seeding.");
     return;
   }
 
-  const replyIds = replies.map(r => r.id);
-  const userIds = users.map(u => u.id);
+  const replyIds = replies.map((r) => r.id);
+  const userIds = users.map((u) => u.id);
   const replyLikes = [];
   const usedCombinations = new Set();
 
@@ -45,9 +44,9 @@ export const up = async (queryInterface, Sequelize) => {
     }
   }
 
-  return queryInterface.bulkInsert('ReplyLikes', replyLikes);
+  return queryInterface.bulkInsert("ReplyLikes", replyLikes);
 };
 
 export const down = (queryInterface, Sequelize) => {
-  return queryInterface.bulkDelete('ReplyLikes', null, {});
+  return queryInterface.bulkDelete("ReplyLikes", null, {});
 };

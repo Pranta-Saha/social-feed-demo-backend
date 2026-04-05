@@ -1,4 +1,4 @@
-import { Reply, Comment, User, ReplyLike } from '../models/index.js';
+import { Reply, Comment, User, ReplyLike } from "../models/index.js";
 
 export const getReplies = async (req, res, next) => {
   try {
@@ -6,26 +6,26 @@ export const getReplies = async (req, res, next) => {
 
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+      return res.status(404).json({ message: "Comment not found" });
     }
 
     const replies = await Reply.findAll({
       where: { commentId },
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "author",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
         {
           model: ReplyLike,
-          as: 'likes',
+          as: "likes",
           include: [
             {
               model: User,
-              as: 'user',
-              attributes: ['id', 'firstName', 'lastName'],
+              as: "user",
+              attributes: ["id", "firstName", "lastName"],
             },
           ],
         },
@@ -33,7 +33,9 @@ export const getReplies = async (req, res, next) => {
     });
 
     const formattedReplies = replies.map((reply) => {
-      const likedByCurrentUser = reply.likes.some((like) => like.userId === req.userId);
+      const likedByCurrentUser = reply.likes.some(
+        (like) => like.userId === req.userId,
+      );
       return {
         ...reply.toJSON(),
         likedByCurrentUser,
@@ -53,12 +55,12 @@ export const createReply = async (req, res, next) => {
     const { content } = req.body;
 
     if (!content) {
-      return res.status(400).json({ message: 'Content is required' });
+      return res.status(400).json({ message: "Content is required" });
     }
 
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+      return res.status(404).json({ message: "Comment not found" });
     }
 
     const reply = await Reply.create({
@@ -71,14 +73,14 @@ export const createReply = async (req, res, next) => {
       include: [
         {
           model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "author",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
       ],
     });
 
     return res.status(201).json({
-      message: 'Reply created successfully',
+      message: "Reply created successfully",
       reply: {
         ...replyWithAuthor.toJSON(),
         likedByCurrentUser: false,
@@ -97,16 +99,16 @@ export const deleteReply = async (req, res, next) => {
 
     const reply = await Reply.findByPk(replyId);
     if (!reply) {
-      return res.status(404).json({ message: 'Reply not found' });
+      return res.status(404).json({ message: "Reply not found" });
     }
 
     if (reply.authorId !== req.userId) {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: "Access denied" });
     }
 
     await reply.destroy();
 
-    return res.status(200).json({ message: 'Reply deleted successfully' });
+    return res.status(200).json({ message: "Reply deleted successfully" });
   } catch (error) {
     next(error);
   }

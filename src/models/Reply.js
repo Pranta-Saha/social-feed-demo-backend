@@ -1,8 +1,8 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
-import { v4 as uuidv4 } from 'uuid';
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
+import { v4 as uuidv4 } from "uuid";
 
-const Reply = sequelize.define('Reply', {
+const Reply = sequelize.define("Reply", {
   id: {
     type: DataTypes.STRING,
     primaryKey: true,
@@ -16,16 +16,16 @@ const Reply = sequelize.define('Reply', {
     type: DataTypes.STRING,
     allowNull: false,
     references: {
-      model: 'Comments',
-      key: 'id',
+      model: "Comments",
+      key: "id",
     },
   },
   authorId: {
     type: DataTypes.STRING,
     allowNull: false,
     references: {
-      model: 'Users',
-      key: 'id',
+      model: "Users",
+      key: "id",
     },
   },
   createdAt: {

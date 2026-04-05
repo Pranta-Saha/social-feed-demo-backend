@@ -1,24 +1,22 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export const up = async (queryInterface, Sequelize) => {
   // Get all posts and users
-  const posts = await queryInterface.sequelize.query(
-    'SELECT id FROM "Posts"',
-    { type: queryInterface.sequelize.QueryTypes.SELECT }
-  );
+  const posts = await queryInterface.sequelize.query('SELECT id FROM "Posts"', {
+    type: queryInterface.sequelize.QueryTypes.SELECT,
+  });
 
-  const users = await queryInterface.sequelize.query(
-    'SELECT id FROM "Users"',
-    { type: queryInterface.sequelize.QueryTypes.SELECT }
-  );
+  const users = await queryInterface.sequelize.query('SELECT id FROM "Users"', {
+    type: queryInterface.sequelize.QueryTypes.SELECT,
+  });
 
   if (posts.length === 0 || users.length === 0) {
-    console.warn('No posts or users found. Skipping post likes seeding.');
+    console.warn("No posts or users found. Skipping post likes seeding.");
     return;
   }
 
-  const postIds = posts.map(p => p.id);
-  const userIds = users.map(u => u.id);
+  const postIds = posts.map((p) => p.id);
+  const userIds = users.map((u) => u.id);
   const postLikes = [];
   const usedCombinations = new Set();
 
@@ -45,9 +43,9 @@ export const up = async (queryInterface, Sequelize) => {
     }
   }
 
-  return queryInterface.bulkInsert('PostLikes', postLikes);
+  return queryInterface.bulkInsert("PostLikes", postLikes);
 };
 
 export const down = (queryInterface, Sequelize) => {
-  return queryInterface.bulkDelete('PostLikes', null, {});
+  return queryInterface.bulkDelete("PostLikes", null, {});
 };

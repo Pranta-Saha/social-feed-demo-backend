@@ -1,4 +1,12 @@
-import { Post, User, PostLike, Comment, Reply } from '../models/index.js';
+import {
+  Post,
+  User,
+  PostLike,
+  Comment,
+  Reply,
+  CommentLike,
+  ReplyLike,
+} from "../models/index.js";
 
 export const getFeed = async (req, res, next) => {
   try {
@@ -9,41 +17,99 @@ export const getFeed = async (req, res, next) => {
     const { count, rows } = await Post.findAndCountAll({
       offset,
       limit,
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "author",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
         {
           model: PostLike,
-          as: 'likes',
-          attributes: ['id', 'userId'],
+          as: "likes",
+          attributes: ["id", "userId"],
           include: [
             {
               model: User,
-              as: 'user',
-              attributes: ['id', 'firstName', 'lastName'],
+              as: "user",
+              attributes: ["id", "firstName", "lastName"],
             },
           ],
         },
         {
           model: Comment,
-          as: 'comments',
+          as: "comments",
           include: [
             {
+              model: CommentLike,
+              as: "likes",
+              attributes: ["id", "userId"],
+              include: [
+                {
+                  model: User,
+                  as: "user",
+                  attributes: ["id", "firstName", "lastName"],
+                },
+              ],
+            },
+            {
               model: User,
-              as: 'author',
-              attributes: ['id', 'firstName', 'lastName'],
+              as: "author",
+              attributes: ["id", "firstName", "lastName"],
+            },
+            {
+              model: Reply,
+              as: "replies",
+              include: [
+                {
+                  model: User,
+                  as: "author",
+                  attributes: ["id", "firstName", "lastName"],
+                },
+                {
+                  model: ReplyLike,
+                  as: "likes",
+                  attributes: ["id", "userId"],
+                  include: [
+                    {
+                      model: User,
+                      as: "user",
+                      attributes: ["id", "firstName", "lastName"],
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
       ],
     });
 
-    const posts = rows.map((post) => {
-      const likedByCurrentUser = post.likes.some((like) => like.userId === req.userId);
+    let posts = rows.filter((post) => {
+      if (post.isPrivate) {
+        return post.authorId === req.userId;
+      }
+      return true;
+    });
+
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    posts = posts.map((post) => {
+      const likedByCurrentUser = post.likes.some(
+        (like) => like.userId === req.userId,
+      );
+      post.comments.map((comment) => {
+        comment.likedByCurrentUser = comment.likes.some(
+          (like) => like.userId === req.userId,
+        );
+        comment.replies.map((reply) => {
+          reply.likedByCurrentUser = reply.likes.some(
+            (like) => like.userId === req.userId,
+          );
+          return reply;
+        });
+        return comment;
+      });
+      post.image = post.image ? `${baseUrl}/${post.image}` : null;
       return {
         ...post.toJSON(),
         likedByCurrentUser,
@@ -68,21 +134,17 @@ export const createPost = async (req, res, next) => {
     const { content, isPrivate } = req.body;
 
     if (!content || !content.trim()) {
-      return res.status(400).json({ message: 'Content is required' });
+      return res.status(400).json({ message: "Content is required" });
     }
 
-    // Use uploaded file path if available
-    const randomString = Math.random().toString(36).substring(2, 8);
-    const fileExtension = req.file ? req.file.originalname.split('.').pop() : '';
-    const timestamp = Date.now();
     const image = req.file
-      ? `/uploads/${req.userId}/${timestamp}_${randomString}.${fileExtension}`
+      ? `uploads/${req.userId}/${req.file.filename}`
       : null;
 
     const post = await Post.create({
       content,
       image,
-      isPrivate: isPrivate === 'true' || isPrivate === true,
+      isPrivate: isPrivate === "true" || isPrivate === true,
       authorId: req.userId,
     });
 
@@ -90,14 +152,14 @@ export const createPost = async (req, res, next) => {
       include: [
         {
           model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "author",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
       ],
     });
 
     return res.status(201).json({
-      message: 'Post created successfully',
+      message: "Post created successfully",
       post: {
         ...postWithAuthor.toJSON(),
         likedByCurrentUser: false,
@@ -119,28 +181,28 @@ export const getPost = async (req, res, next) => {
       include: [
         {
           model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "author",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
         {
           model: PostLike,
-          as: 'likes',
+          as: "likes",
           include: [
             {
               model: User,
-              as: 'user',
-              attributes: ['id', 'firstName', 'lastName'],
+              as: "user",
+              attributes: ["id", "firstName", "lastName"],
             },
           ],
         },
         {
           model: Comment,
-          as: 'comments',
+          as: "comments",
           include: [
             {
               model: User,
-              as: 'author',
-              attributes: ['id', 'firstName', 'lastName'],
+              as: "author",
+              attributes: ["id", "firstName", "lastName"],
             },
           ],
         },
@@ -148,15 +210,16 @@ export const getPost = async (req, res, next) => {
     });
 
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
-    // Check privacy
     if (post.isPrivate && post.authorId !== req.userId) {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: "Access denied" });
     }
 
-    const likedByCurrentUser = post.likes.some((like) => like.userId === req.userId);
+    const likedByCurrentUser = post.likes.some(
+      (like) => like.userId === req.userId,
+    );
 
     return res.status(200).json({
       ...post.toJSON(),
@@ -174,16 +237,16 @@ export const deletePost = async (req, res, next) => {
 
     const post = await Post.findByPk(postId);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     if (post.authorId !== req.userId) {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: "Access denied" });
     }
 
     await post.destroy();
 
-    return res.status(200).json({ message: 'Post deleted successfully' });
+    return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     next(error);
   }

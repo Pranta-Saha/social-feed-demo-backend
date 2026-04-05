@@ -1,8 +1,8 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
-import { v4 as uuidv4 } from 'uuid';
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
+import { v4 as uuidv4 } from "uuid";
 
-const Post = sequelize.define('Post', {
+const Post = sequelize.define("Post", {
   id: {
     type: DataTypes.STRING,
     primaryKey: true,
@@ -24,8 +24,8 @@ const Post = sequelize.define('Post', {
     type: DataTypes.STRING,
     allowNull: false,
     references: {
-      model: 'Users',
-      key: 'id',
+      model: "Users",
+      key: "id",
     },
   },
   createdAt: {

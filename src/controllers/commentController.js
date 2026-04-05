@@ -1,4 +1,4 @@
-import { Comment, Post, User, CommentLike, Reply } from '../models/index.js';
+import { Comment, Post, User, CommentLike, Reply } from "../models/index.js";
 
 export const getComments = async (req, res, next) => {
   try {
@@ -6,37 +6,37 @@ export const getComments = async (req, res, next) => {
 
     const post = await Post.findByPk(postId);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     const comments = await Comment.findAll({
       where: { postId },
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "author",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
         {
           model: CommentLike,
-          as: 'likes',
+          as: "likes",
           include: [
             {
               model: User,
-              as: 'user',
-              attributes: ['id', 'firstName', 'lastName'],
+              as: "user",
+              attributes: ["id", "firstName", "lastName"],
             },
           ],
         },
         {
           model: Reply,
-          as: 'replies',
+          as: "replies",
           include: [
             {
               model: User,
-              as: 'author',
-              attributes: ['id', 'firstName', 'lastName'],
+              as: "author",
+              attributes: ["id", "firstName", "lastName"],
             },
           ],
         },
@@ -44,7 +44,9 @@ export const getComments = async (req, res, next) => {
     });
 
     const formattedComments = comments.map((comment) => {
-      const likedByCurrentUser = comment.likes.some((like) => like.userId === req.userId);
+      const likedByCurrentUser = comment.likes.some(
+        (like) => like.userId === req.userId,
+      );
       return {
         ...comment.toJSON(),
         likedByCurrentUser,
@@ -64,12 +66,12 @@ export const createComment = async (req, res, next) => {
     const { content } = req.body;
 
     if (!content) {
-      return res.status(400).json({ message: 'Content is required' });
+      return res.status(400).json({ message: "Content is required" });
     }
 
     const post = await Post.findByPk(postId);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     const comment = await Comment.create({
@@ -82,14 +84,14 @@ export const createComment = async (req, res, next) => {
       include: [
         {
           model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "author",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
       ],
     });
 
     return res.status(201).json({
-      message: 'Comment created successfully',
+      message: "Comment created successfully",
       comment: {
         ...commentWithAuthor.toJSON(),
         likedByCurrentUser: false,
@@ -109,16 +111,16 @@ export const deleteComment = async (req, res, next) => {
 
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+      return res.status(404).json({ message: "Comment not found" });
     }
 
     if (comment.authorId !== req.userId) {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: "Access denied" });
     }
 
     await comment.destroy();
 
-    return res.status(200).json({ message: 'Comment deleted successfully' });
+    return res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
     next(error);
   }

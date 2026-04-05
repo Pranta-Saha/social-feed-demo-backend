@@ -1,18 +1,18 @@
-import bcrypt from 'bcryptjs';
-import { User } from '../models/index.js';
-import { generateToken } from '../utils/jwt.js';
+import bcrypt from "bcryptjs";
+import { User } from "../models/index.js";
+import { generateToken } from "../utils/jwt.js";
 
 export const register = async (req, res, next) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,7 +27,7 @@ export const register = async (req, res, next) => {
     const token = generateToken(user.id);
 
     return res.status(201).json({
-      message: 'User registered successfully',
+      message: "User registered successfully",
       token,
       user: {
         id: user.id,
@@ -46,23 +46,25 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = generateToken(user.id);
 
     return res.status(200).json({
-      message: 'Login successful',
+      message: "Login successful",
       token,
       user: {
         id: user.id,

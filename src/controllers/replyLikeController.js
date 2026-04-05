@@ -1,4 +1,4 @@
-import { ReplyLike, Reply, User } from '../models/index.js';
+import { ReplyLike, Reply, User } from "../models/index.js";
 
 export const likeReply = async (req, res, next) => {
   try {
@@ -7,7 +7,7 @@ export const likeReply = async (req, res, next) => {
 
     const reply = await Reply.findByPk(replyId);
     if (!reply) {
-      return res.status(404).json({ message: 'Reply not found' });
+      return res.status(404).json({ message: "Reply not found" });
     }
 
     const existingLike = await ReplyLike.findOne({
@@ -15,12 +15,12 @@ export const likeReply = async (req, res, next) => {
     });
 
     if (existingLike) {
-      return res.status(400).json({ message: 'Reply already liked' });
+      return res.status(400).json({ message: "Reply already liked" });
     }
 
     await ReplyLike.create({ replyId, userId });
 
-    return res.status(201).json({ message: 'Reply liked successfully' });
+    return res.status(201).json({ message: "Reply liked successfully" });
   } catch (error) {
     next(error);
   }
@@ -36,12 +36,12 @@ export const unlikeReply = async (req, res, next) => {
     });
 
     if (!like) {
-      return res.status(404).json({ message: 'Like not found' });
+      return res.status(404).json({ message: "Like not found" });
     }
 
     await like.destroy();
 
-    return res.status(200).json({ message: 'Reply unliked successfully' });
+    return res.status(200).json({ message: "Reply unliked successfully" });
   } catch (error) {
     next(error);
   }
@@ -53,7 +53,7 @@ export const getReplyLikes = async (req, res, next) => {
 
     const reply = await Reply.findByPk(replyId);
     if (!reply) {
-      return res.status(404).json({ message: 'Reply not found' });
+      return res.status(404).json({ message: "Reply not found" });
     }
 
     const likes = await ReplyLike.findAll({
@@ -61,8 +61,8 @@ export const getReplyLikes = async (req, res, next) => {
       include: [
         {
           model: User,
-          as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          as: "user",
+          attributes: ["id", "firstName", "lastName", "email"],
         },
       ],
     });

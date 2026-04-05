@@ -1,18 +1,16 @@
-import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../uploads');
+const uploadsDir = path.join(__dirname, "../../uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const userDir = path.join(uploadsDir, req.userId);
@@ -28,17 +26,15 @@ const storage = multer.diskStorage({
   },
 });
 
-// File filter - accept only images
 const fileFilter = (req, file, cb) => {
-  const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedMimes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Only image files are allowed'), false);
+    cb(new Error("Only image files are allowed"), false);
   }
 };
 
-// Multer configuration
 const upload = multer({
   storage,
   fileFilter,

@@ -92,24 +92,3 @@ export const createReply = async (req, res, next) => {
     next(error);
   }
 };
-
-export const deleteReply = async (req, res, next) => {
-  try {
-    const { replyId } = req.params;
-
-    const reply = await Reply.findByPk(replyId);
-    if (!reply) {
-      return res.status(404).json({ message: "Reply not found" });
-    }
-
-    if (reply.authorId !== req.userId) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    await reply.destroy();
-
-    return res.status(200).json({ message: "Reply deleted successfully" });
-  } catch (error) {
-    next(error);
-  }
-};

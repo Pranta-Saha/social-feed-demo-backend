@@ -244,6 +244,28 @@ export const deletePost = async (req, res, next) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
+    const comments = await Comment.findAll({ where: { postId } });
+    const commentIds = comments.map((c) => c.id);
+
+    if (commentIds.length > 0) {
+      const replies = await Reply.findAll({
+        where: { commentId: commentIds },
+      });
+      const replyIds = replies.map((r) => r.id);
+
+      if (replyIds.length > 0) {
+        await ReplyLike.destroy({ where: { replyId: replyIds } });
+      }
+
+      await Reply.destroy({ where: { commentId: commentIds } });
+
+      await CommentLike.destroy({ where: { commentId: commentIds } });
+    }
+
+    await Comment.destroy({ where: { postId } });
+
+    await PostLike.destroy({ where: { postId } });
+
     await post.destroy();
 
     return res.status(200).json({ message: "Post deleted successfully" });

@@ -15,7 +15,6 @@ import {
 import {
   getComments,
   createComment,
-  deleteComment,
 } from "../controllers/commentController.js";
 import {
   likeComment,
@@ -25,7 +24,6 @@ import {
 import {
   getReplies,
   createReply,
-  deleteReply,
 } from "../controllers/replyController.js";
 import {
   likeReply,
@@ -59,10 +57,6 @@ router.post("/comments/:commentId/like", likeComment);
 router.post("/comments/:commentId/unlike", unlikeComment);
 router.get("/comments/:commentId/replies", getReplies);
 router.post("/comments/:commentId/replies", createReply);
-
-// Delete routes
-router.delete("/comments/:commentId", deleteComment);
-router.delete("/replies/:replyId", deleteReply);
 
 // Reply like routes
 router.post("/replies/:replyId/like", likeReply);

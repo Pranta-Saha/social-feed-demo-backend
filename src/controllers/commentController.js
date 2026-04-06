@@ -104,24 +104,3 @@ export const createComment = async (req, res, next) => {
     next(error);
   }
 };
-
-export const deleteComment = async (req, res, next) => {
-  try {
-    const { commentId } = req.params;
-
-    const comment = await Comment.findByPk(commentId);
-    if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
-    }
-
-    if (comment.authorId !== req.userId) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    await comment.destroy();
-
-    return res.status(200).json({ message: "Comment deleted successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
